@@ -33,18 +33,45 @@ def set_servo_angles(leg_one, leg_two):
     kit.servo[1].angle = minmax(leg_two[0] + 5)  # 95
     kit.servo[2].angle = minmax(leg_one[1] + 90 - 5)  # 85
     kit.servo[3].angle = minmax(leg_two[1] + 90 - 5)  # 85
-    kit.servo[4].angle = minmax(leg_one[2] + 180 + 5)  # 95
+    kit.servo[4].angle = minmax(leg_one[2] + 180)  # 95
     kit.servo[5].angle = minmax(leg_two[2] + 180)  # 90
 
 
+leg_state = {
+    "stationary_0": [degrees(x) for x in get_angles(2, 9, 5, 5, 3)],
+    "stationary_1": [degrees(x) for x in get_angles(1, 9, 5, 5, 3)],
+    "stationary_2": [degrees(x) for x in get_angles(0, 9, 5, 5, 3)],
+    "stationary_3": [degrees(x) for x in get_angles(1, 9, 5, 5, 3)],
+    "stationary_4": [degrees(x) for x in get_angles(-2, 9, 5, 5, 3)],
+    "moving_0": [degrees(x) for x in get_angles(-2, 9, 5, 5, 3)],
+    "moving_1": [degrees(x) for x in get_angles(-1, 8, 5, 5, 3)],
+    "moving_2": [degrees(x) for x in get_angles(0, 8, 5, 5, 3)],
+    "moving_3": [degrees(x) for x in get_angles(1, 9, 5, 5, 3)],
+    "moving_4": [degrees(x) for x in get_angles(2, 9, 5, 5, 3)]
+}
+
+# leg_state["moving_1"][2] += 15
+
+set_servo_angles([90, 0, -90], [90, 0, -90])
+
+exit(0)
+
+delay = 0.1
+
 while True:
-    leg_one = [
-        degrees(x) for x in get_angles(-2, 9, 5, 5, 3)]
-
-    leg_two = [
-        degrees(x) for x in get_angles(3, 9, 5, 5, 3)]
-
-    set_servo_angles(leg_one, leg_two)
-    sleep(1)
-    set_servo_angles(leg_two, leg_one)
-    sleep(1)
+    set_servo_angles(leg_state["stationary_0"], leg_state["moving_0"])
+    sleep(delay)
+    set_servo_angles(leg_state["stationary_1"], leg_state["moving_1"])
+    sleep(delay)
+    set_servo_angles(leg_state["stationary_2"], leg_state["moving_2"])
+    sleep(delay)
+    set_servo_angles(leg_state["stationary_3"], leg_state["moving_3"])
+    sleep(delay)
+    set_servo_angles(leg_state["stationary_4"], leg_state["moving_4"])
+    sleep(delay)
+    set_servo_angles(leg_state["moving_3"], leg_state["stationary_3"])
+    sleep(delay)
+    set_servo_angles(leg_state["moving_2"], leg_state["stationary_2"])
+    sleep(delay)
+    set_servo_angles(leg_state["moving_1"], leg_state["stationary_1"])
+    sleep(delay)
