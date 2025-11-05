@@ -21,7 +21,12 @@ def GYRO_out():
 
 
 def ACCEL_out():
-    return mpu.acceleration
+    global mpu
+    try:
+        return mpu.acceleration
+    except:
+        mpu = adafruit_mpu6050.MPU6050(i2c)
+        return mpu.acceleration
 
 
 if __name__ == "__main__":

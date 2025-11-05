@@ -1,40 +1,11 @@
-from adafruit_servokit import ServoKit
 from time import sleep
-from math import sin, cos, radians, pi, acos, atan2, sqrt, degrees
+from maths import degrees
+from body import init_servo, set_servo_angles
+from maths import get_x_zmp, get_angles, PID_Controller, minmax
+from sensor import ACCEL_out, GYRO_out, ADC_out
+from math import radians
 
-
-def get_angles(x, y, l1, l2, l3):
-    global state
-    r = sqrt(x**2 + y**2)
-
-    angle_hip = atan2(y, x)-acos((l1**2+r**2-l2**2)/(2*l1*r))
-    angle_knee = pi-acos((l1**2 + l2**2 - r**2)/(2*l1*l2))
-
-    angle_ankle = radians(0) - (angle_knee + angle_hip)
-
-    return angle_hip, angle_knee, angle_ankle
-
-
-def minmax(x, p=180, n=0):
-    return min(p, max(x, n))
-
-
-kit = ServoKit(channels=16)
-kit.servo[0].set_pulse_width_range(450, 2600)
-kit.servo[1].set_pulse_width_range(450, 2600)
-kit.servo[2].set_pulse_width_range(500, 2600)
-kit.servo[3].set_pulse_width_range(450, 2500)
-kit.servo[4].set_pulse_width_range(500, 2600)
-kit.servo[5].set_pulse_width_range(500, 2600)
-
-
-def set_servo_angles(leg_one, leg_two):
-    kit.servo[0].angle = minmax(leg_one[0] - 5)  # 85
-    kit.servo[1].angle = minmax(leg_two[0] + 5)  # 95
-    kit.servo[2].angle = minmax(leg_one[1] + 90 - 5)  # 85
-    kit.servo[3].angle = minmax(leg_two[1] + 90 - 5)  # 85
-    kit.servo[4].angle = minmax(leg_one[2] + 180)  # 95
-    kit.servo[5].angle = minmax(leg_two[2] + 180)  # 90
+init_servo()
 
 
 leg_state = {
@@ -51,27 +22,36 @@ leg_state = {
 }
 
 # leg_state["moving_1"][2] += 15
+leg_one, leg_two = ([degrees(x) for x in get_angles(-3, 9, 5, 5, 3)], [degrees(x) for x in get_angles(-3, 9, 5, 5, 3)])
 
-set_servo_angles([90, 0, -90], [90, 0, -90])
+set_servo_angles(leg_one, leg_two)
 
-exit(0)
+print([degrees(x) for x in get_angles(-2, 9, 5, 5, 3)], [degrees(x) for x in get_angles(-2, 9, 5, 5, 3)])
 
-delay = 0.1
+delay = 0.01
+xl, xr = -1, -1
+prev_e = 0
+hip_integral = 0
+knee_integral = 0
 
+perfect_zmp = 0
+print(leg_one[2])
 while True:
-    set_servo_angles(leg_state["stationary_0"], leg_state["moving_0"])
+    _, acclx, acclz = ACCEL_out()
+    fl, fr = ADC_out()
+    x_zmp = get_x_zmp(fl, fr, xl, xr, acclx, acclz, 16, delay, 0.5)
+
+    e = x_zmp
+    hip_integral = minmax(hip_integral, n=-20, p=20)
+    knee_integral = minmax(knee_integral, n=-20, p=20)
+    delta_hip_angle, hip_integral = PID_Controller(0.3, 0.01, 0, e, prev_e, delay, hip_integral)
+    prev_e = e
+
+    # leg_one[2] = leg_two[2] = minmax(leg_one[2] - delta_ankle_angle, p=-60, n=-120)
+    leg_one[0] = leg_two[0] = minmax(leg_one[0] + delta_hip_angle)
+
+    # print(leg_one[2])
+    set_servo_angles(leg_one, leg_two)
     sleep(delay)
-    set_servo_angles(leg_state["stationary_1"], leg_state["moving_1"])
-    sleep(delay)
-    set_servo_angles(leg_state["stationary_2"], leg_state["moving_2"])
-    sleep(delay)
-    set_servo_angles(leg_state["stationary_3"], leg_state["moving_3"])
-    sleep(delay)
-    set_servo_angles(leg_state["stationary_4"], leg_state["moving_4"])
-    sleep(delay)
-    set_servo_angles(leg_state["moving_3"], leg_state["stationary_3"])
-    sleep(delay)
-    set_servo_angles(leg_state["moving_2"], leg_state["stationary_2"])
-    sleep(delay)
-    set_servo_angles(leg_state["moving_1"], leg_state["stationary_1"])
-    sleep(delay)
+    if leg_one[2] > -75 or leg_one[2] < -150:
+        pass

@@ -21,10 +21,15 @@ def get_x_zmp(fl, fr, xl, xr, ax, ux, z_c, dt, alpha):
     xcom = ux * dt + 0.5 * ax * dt * dt
 
     xzmp_imu = xcom - (z_c / 9.8) * ax
-    xzmp_fsr = (xl*fl + xr*fr)/(fl+fr)
+    xzmp_fsr = (xl*fl + xr*fr)/minmax(fl+fr, n=0.01)
 
     return (alpha * xzmp_fsr) + ((1 - alpha) * xzmp_imu)
 
 
-def PD_Controller(kp, kd, e, prev_e, dt): 
-    return kp * e + kd * (e - prev_e) / dt
+def PID_Controller(kp, ki, kd, e, prev_e, dt, prev_integral):
+    integral = prev_integral + e * dt
+    return kp * e + kd * (e - prev_e) / dt + ki * integral, integral
+
+
+if __name__ == "__main__":
+    print(get_x_zmp(1, 1, 0, 0, 0, 0, 16, 0.1, 0.6))
