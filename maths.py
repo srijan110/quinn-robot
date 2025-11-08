@@ -1,6 +1,24 @@
 from math import sin, cos, radians, pi, acos, atan2, sqrt, degrees
 
 
+def get_coords(index, total, curved, ix, iy, fx, fy, h):
+    if not curved:
+        diffx, diffy = fx - ix, fy - iy
+        framex, framey = diffx / total, diffy / total
+        return ix + framex * index, iy + framey * index
+
+    else:
+        x, y = cubic_bezier((ix, iy), (ix, iy+h), (fx, fy+h), (fx, fy), index/total)
+        return x, y
+
+
+def cubic_bezier(p0, p1, p2, p3, t):
+    u = 1 - t
+    x = (u**3)*p0[0] + 3*(u**2)*t*p1[0] + 3*u*(t**2)*p2[0] + (t**3)*p3[0]
+    y = (u**3)*p0[1] + 3*(u**2)*t*p1[1] + 3*u*(t**2)*p2[1] + (t**3)*p3[1]
+    return x, y
+
+
 def get_angles(x, y, l1, l2, l3):
     global state
     r = sqrt(x**2 + y**2)
