@@ -17,9 +17,9 @@ def init_servo():
 
 
 def set_servo_angles(leg_one, leg_two):
-    kit.servo[0].angle = minmax(leg_one[0] + 20)  # 85
+    kit.servo[0].angle = minmax(leg_one[0] + 10)  # 85
     kit.servo[1].angle = minmax(leg_two[0] + 5)  # 95
-    kit.servo[2].angle = minmax(leg_one[1] + 90 - 15)  # 85
+    kit.servo[2].angle = minmax(leg_one[1] + 90 - 5)  # 85
     kit.servo[3].angle = minmax(leg_two[1] + 90 - 5)  # 85
     kit.servo[4].angle = minmax(leg_one[2] + 180, n=60, p=120)  # 95
     kit.servo[5].angle = minmax(leg_two[2] + 180, n=60, p=120)  # 90

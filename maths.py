@@ -8,15 +8,14 @@ def get_coords(index, total, curved, ix, iy, fx, fy, h):
         return ix + framex * index, iy + framey * index
 
     else:
-        x, y = cubic_bezier((ix, iy), (ix, iy+h), (fx, fy+h), (fx, fy), index/total)
-        return x, y
+        y = cubic_bezier(iy, iy+h, fy+h, fy, index/total)
+        return ix + ((fx - ix) * index/total), y
 
 
 def cubic_bezier(p0, p1, p2, p3, t):
     u = 1 - t
-    x = (u**3)*p0[0] + 3*(u**2)*t*p1[0] + 3*u*(t**2)*p2[0] + (t**3)*p3[0]
-    y = (u**3)*p0[1] + 3*(u**2)*t*p1[1] + 3*u*(t**2)*p2[1] + (t**3)*p3[1]
-    return x, y
+    x = (u**3)*p0 + 3*(u**2)*t*p1 + 3*u*(t**2)*p2 + (t**3)*p3
+    return x
 
 
 def get_angles(x, y, l1, l2, l3):
