@@ -3,10 +3,11 @@ import board
 import adafruit_mpu6050
 from maths import minmax
 
-i2c = board.I2C()
-ads = ADS1015(i2c)
-ads.gain = ads.gains[2]
-mpu = adafruit_mpu6050.MPU6050(i2c)
+def init_sensor():
+    i2c = board.I2C()
+    ads = ADS1015(i2c)
+    ads.gain = ads.gains[2]
+    mpu = adafruit_mpu6050.MPU6050(i2c)
 
 
 def ADC_out():

@@ -6,7 +6,7 @@ from sensor import ACCEL_out, GYRO_out, ADC_out
 from math import radians
 
 
-def turn(left=True, ix=1, iy=9, fx=-1, fy=9, hip_offset=-15, ankle_offset=0, step_duration=0.2, delay=0.01, dx=-1, dy=9, steps=1):
+def turn(left=True, ix=1, iy=9, fx=-1, fy=9, hip_offset=-5, ankle_offset=0, step_duration=0.2, delay=0.01, dx=-1, dy=9, steps=1):
     left_leg, right_leg = ([degrees(x) for x in get_angles(dx, dy, 5, 5, 3)], [degrees(x) for x in get_angles(-1, 9, 5, 5, 3)])
     left_leg[0] = right_leg[0] = left_leg[0] + hip_offset
     set_leg_servo_angles(left_leg, right_leg)
@@ -30,8 +30,8 @@ def turn(left=True, ix=1, iy=9, fx=-1, fy=9, hip_offset=-15, ankle_offset=0, ste
 
         print(left_leg)
 
-        left_leg[0] = minmax(left_leg[0] + hip_offset - 10)
-        right_leg[0] = minmax(right_leg[0] + hip_offset - 10)
+        left_leg[0] = minmax(left_leg[0] + hip_offset)
+        right_leg[0] = minmax(right_leg[0] + hip_offset)
 
         set_leg_servo_angles(left_leg, right_leg)
         sleep(delay)
