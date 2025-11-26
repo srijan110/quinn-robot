@@ -1,35 +1,58 @@
 <!DOCTYPE html>
 <html>
-<head><title>Control & Status</title></head>
-<body>
-
-<h2>Control</h2>
-<button onclick="sendDir('up')">UP</button>
-<button onclick="sendDir('down')">DOWN</button>
-<button onclick="sendDir('left')">LEFT</button>
-<button onclick="sendDir('right')">RIGHT</button>
-
-<h3>Status</h3>
-<div id="status">Loading...</div>
-
-<script>
-function sendDir(d) {
-    fetch('/api/set-direction', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({"dir": d})
-    });
+<head>
+<style>
+.container {
+    display: inline-grid;
+    grid-template-columns: 60px 60px 60px;
+    gap: 10px;
+    margin-top: 40px;
 }
 
-// live status every 1 sec
-setInterval(() => {
-    fetch('/api/get-status')
+.btn {
+    width: 60px;
+    height: 60px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    background: #eee;
+    border: 2px solid #555;
+    border-radius: 8px;
+}
+
+.btn:active {
+    background: #ccc;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div></div>
+    <button class="btn" onclick="send('up')">↑</button>
+    <div></div>
+
+    <button class="btn" onclick="send('left')">←</button>
+    <button class="btn" onclick="send('down')">↓</button>
+    <button class="btn" onclick="send('right')">→</button>
+</div>
+
+<br>
+
+<a class="btn" href="/">Back</a>
+
+<script>
+function send(dir) {
+    fetch("/api/set-direction", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dir: dir })
+    })
     .then(r => r.json())
-    .then(data => {
-        document.getElementById("status").innerText = data.direction;
-    });
-}, 1000);
+    .then(data => console.log("Server:", data));
+}
 </script>
 
 </body>
 </html>
+

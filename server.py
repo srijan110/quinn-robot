@@ -15,7 +15,7 @@ import subprocess
 
 capture_image = ["rpicam-still", "-o", "static/image.png", "-t", "1", "--width", "800", "--height", "600"]
 
-convert_wav = ["ffmpeg", "-y", "-i", "assets/rec.webm", "assets/rec.wav"]
+convert_wav = ["ffmpeg", "-y", "-i", "assets/rec.webm", "-ar", "12000", "assets/rec.wav"]
 
 # Shared state
 state = {"direction": None}
@@ -23,7 +23,7 @@ messages = ''
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("main.html")
 
 @app.route("/control")
 def control():
