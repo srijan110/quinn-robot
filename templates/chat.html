@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head><title>Chat</title></head>
+<body>
+
+<h2>Chatbox</h2>
+<form onsubmit="sendMsg(); return false;">
+    <input id="msg" type="text" placeholder="Type message" required>
+    <button type="submit">Send</button>
+</form>
+
+<hr>
+
+<h2>Take Picture</h2>
+<button onclick="window.location.href='/view-image'">Capture</button>
+<br>
+
+<script>
+function sendMsg() {
+    const text = document.getElementById("msg").value;
+
+    fetch('/api/chat-post', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({"text": text})
+    }).then(() => {
+        document.getElementById("msg").value = "";
+    });
+}
+
+
+</script>
+
+</body>
+</html>

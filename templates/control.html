@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head><title>Control & Status</title></head>
+<body>
+
+<h2>Control</h2>
+<button onclick="sendDir('up')">UP</button>
+<button onclick="sendDir('down')">DOWN</button>
+<button onclick="sendDir('left')">LEFT</button>
+<button onclick="sendDir('right')">RIGHT</button>
+
+<h3>Status</h3>
+<div id="status">Loading...</div>
+
+<script>
+function sendDir(d) {
+    fetch('/api/set-direction', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({"dir": d})
+    });
+}
+
+// live status every 1 sec
+setInterval(() => {
+    fetch('/api/get-status')
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById("status").innerText = data.direction;
+    });
+}, 1000);
+</script>
+
+</body>
+</html>

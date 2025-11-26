@@ -3,7 +3,8 @@ import requests
 class MistralChat:
     def __init__(self, api_key, system_prompt):
         self.api_key = api_key
-        self.url = "https://api.mistral.ai/v1/chat/completions"
+        self.llm_url = "https://api.mistral.ai/v1/chat/completions"
+        self.stt_url = "https://api.mistral.ai/v1/audio/transcriptions"
         self.headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
@@ -13,8 +14,26 @@ class MistralChat:
         self.messages = [
             {"role": "system", "content": system_prompt}
         ]
+    
+    def send_stt(self, audio_file):
+        with open(audio_file, "rb") as f:
+            files = {"file": (audio_file, f, "audio/wav")}
+            data = {"model": 'voxtral-mini-latest', "language": "en"}
+    
+            headers = {
+                "Authorization": f"Bearer {self.api_key}"
+            }
+    
+            response = requests.post(self.stt_url, headers=headers, files=files, data=data)
+    
+        if response.status_code == 200:
+            result = response.json()
+            return result.get("text", "No text returned")
+        else:
+            print("Error:", response.status_code, response.text)
 
-    def send(self, user_message):
+
+    def send_llm(self, user_message):
         self.messages.append({"role": "user", "content": user_message})
         #   Keep only system + last 4 non-system messages
         system = self.messages[0]
@@ -26,7 +45,7 @@ class MistralChat:
             "messages": self.messages
         }
     
-        response = requests.post(self.url, headers=self.headers, json=payload)
+        response = requests.post(self.llm_url, headers=self.headers, json=payload)
     
         # Print status code and raw response for debugging
         if response.status_code != 200:
