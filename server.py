@@ -4,6 +4,10 @@ from tts import speak
 from dotenv import load_dotenv
 from os import environ
 from mistral_api import MistralChat
+from walk import turn, walk_front
+
+def show_image(a):
+    pass
 
 load_dotenv()
 
@@ -23,18 +27,27 @@ messages = ''
 
 @app.route("/")
 def index():
+    show_image("assets/normal.png")
     return render_template("main.html")
 
 @app.route("/control")
 def control():
+    show_image("assets/normal.png")
     return render_template("control.html")
-
 
 # API for direction change
 @app.post("/api/set-direction")
 def set_direction():
     d = request.json.get("dir")
     state["direction"] = d
+    if d == "up":
+        walk_front(steps=10)
+    if d == "down":
+        walk_front(steps=10, ix=-1, fx=2)
+    if d == "left":
+        turn(steps=10)
+    if d == "right":
+        turn(left=False, steps=10)
     return {"ok": True}
 
 
@@ -52,10 +65,13 @@ def chat():
 @app.post("/api/chat-post")
 def chat_post():
     text = request.json.get("text", "").strip()
-    if text:
-        messages = text
-        speak(mistral.send(text))
-    return {"ok": True}
+    if not text:
+        return {"error": "empty text"}, 400
+
+    reply = mistral.send_llm(text)
+    speak(reply)
+
+    return {"response": reply}
 
 @app.get("/api/chat-get")
 def chat_get():
@@ -74,7 +90,8 @@ def output_image():
 def upload_audio():
     if "file" not in request.files:
         return jsonify({"error": "no file"}), 400
-
+    
+    show_image("assets/thinking.png")
     file = request.files["file"]
     file.save('assets/rec.webm')
     
@@ -83,7 +100,9 @@ def upload_audio():
     text = mistral.send_stt('assets/rec.wav')
     print(text)
     text = mistral.send_llm(text)
+    show_image("assets/speaking.png")
     speak(text)
+    show_image("assets/normal.png")
 
     return jsonify({"text": text})
 

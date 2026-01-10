@@ -12,6 +12,15 @@
 <br>
 <a class="btn" href="/">Back</a>
 
+<hr>
+
+<h3>Chat</h3>
+<div>
+    <input id="chatInput" type="text" placeholder="Type a message..." style="width:70%; padding:8px;">
+    <button id="sendBtn" style="padding:8px;">Send</button>
+</div>
+<p><b>Chat Response:</b> <span id="chatResponse"></span></p>
+
 <script>
     let mediaRecorder;
     let chunks = [];
@@ -21,9 +30,9 @@
     const status = document.getElementById("status");
     const result = document.getElementById("result");
 
+    // Voice recording
     btn.onclick = async () => {
         if (!recording) {
-            // Start recording
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             mediaRecorder = new MediaRecorder(stream);
             chunks = [];
@@ -52,12 +61,34 @@
             btn.textContent = "⏹ Stop";
 
         } else {
-            // Stop recording and upload
             mediaRecorder.stop();
             recording = false;
             btn.textContent = "🎤 Start";
             status.textContent = "Processing...";
         }
+    };
+
+    // Chat endpoint
+    const sendBtn = document.getElementById("sendBtn");
+    const chatInput = document.getElementById("chatInput");
+    const chatResponse = document.getElementById("chatResponse");
+
+    sendBtn.onclick = async () => {
+        const text = chatInput.value.trim();
+        if (!text) return;
+
+        chatResponse.textContent = "Sending...";
+
+        const res = await fetch("/api/chat-post", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text })
+        });
+
+        const data = await res.json();
+
+        chatResponse.textContent = data.response || "OK";
+        chatInput.value = "";
     };
 </script>
 
