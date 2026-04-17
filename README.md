@@ -1,8 +1,10 @@
 # Quinn Robot
 
-I build this for my 2025 science exhibition. I build this with a challenge that I have to build this without the help of chatgpt or any other ai assistant for this in making of this project.
+I build this for my 2025 science exhibition. I build this with a challenge that I have to build this without the help of chatgpt or any other ai assistant in making of this project.
 
-In this project I had to learn to learn how to use CAD Software. And during that time I was in Grade 9th so I need to learn Maths (Trignometry). And also how to solder.
+This is a Bipedal Humanoid Robot with a with a webpage where we could control the robot and ask any question which is answered through a Minstral LLM. It could also take pictures through the Pi Camera.
+ 
+In this project I had to learn to learn how to use CAD Software. And during that time I was in Grade 9th so I need to learn Maths (Trignometry, Forward-Kinematics, Backward-Kinematics). And also how to solder.
 
 I had to create this project in the budget of Rs.10,000. But I got little overbudget. Mostly the reason was that I didn't have any tool for this project and those tools was bought from the project budget.
 
